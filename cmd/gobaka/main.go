@@ -7,7 +7,8 @@ import (
 	"strings"
 	"time"
 
-	"gitee.com/Kashimura/go-baka-control/api"
+	"gitee.com/Kashimura/go-baka-control/controller/api"
+	"gitee.com/Kashimura/go-baka-control/controller/file"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-contrib/static"
@@ -70,7 +71,8 @@ func Router() *gin.Engine {
 	})
 
 	// 设置接口
-	api.Api(engine.Group("api"))
+	api.Group(engine.Group("api"))
+	file.Group(engine.Group("file"))
 
 	return engine
 }
