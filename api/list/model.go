@@ -22,7 +22,7 @@ func (SystemUrl) TableName() string {
 }
 
 type DownloadFile struct {
-	ID          int       `json:"id" gorm:"column:id;primaryKey"`
+	ID          int64     `json:"id" gorm:"column:id;primaryKey"`
 	Name        string    `json:"name" gorm:"column:name"`
 	FileName    string    `json:"filename" gorm:"column:fname"`
 	Remark      string    `json:"remark" gorm:"column:rname"`

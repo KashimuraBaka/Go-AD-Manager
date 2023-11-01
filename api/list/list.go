@@ -6,6 +6,7 @@ import (
 	"gitee.com/Kashimura/go-baka-control/db/mdb"
 	"gitee.com/Kashimura/go-baka-control/db/mysql"
 	g "gitee.com/Kashimura/go-baka-control/global"
+	"gitee.com/Kashimura/go-baka-control/services/jwt"
 	"github.com/gin-gonic/gin"
 )
 
@@ -22,8 +23,12 @@ func GetSystemUrls(ctx *gin.Context) {
 }
 
 func GetDownloadFiles(ctx *gin.Context) {
-	res := &[]DownloadFile{}
-	mysql.DB.Find(res)
+	res := []DownloadFile{}
+	if mysql.DB.Find(&res).RowsAffected > 0 {
+		for i, v := range res {
+			res[i].FileName = jwt.GetFileToken(v.ID)
+		}
+	}
 	ctx.JSON(http.StatusOK, g.ResponseSuccess(res))
 }
 
