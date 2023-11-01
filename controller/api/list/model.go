@@ -29,7 +29,7 @@ type DownloadFile struct {
 	Size        int64     `json:"size" gorm:"column:size"`
 	User        string    `json:"user" gorm:"column:user"`
 	Time        time.Time `json:"time" gorm:"column:time"`
-	DownloadNum int       `json:"download_num" gorm:"column:dtimes"`
+	DownloadNum int       `json:"downloadnum" gorm:"column:downloadnum"`
 }
 
 func (DownloadFile) TableName() string {
