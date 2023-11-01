@@ -45,8 +45,7 @@ func GetToken(payload *PayLoad, timeout int64) string {
 func GetFileToken(fileid int64) string {
 	var buf bytes.Buffer
 	binary.Write(&buf, binary.BigEndian, fileid)
-	longBytes := buf.Bytes()
-	base64File := base64.StdEncoding.EncodeToString(longBytes)
+	base64File := base64.StdEncoding.EncodeToString(buf.Bytes())
 	nowtime := time.Now().Unix()
 	endtime := nowtime + 21600 // 6个小时
 	info := fmt.Sprintf("%s.%d.%d", base64File, nowtime, endtime)
@@ -92,4 +91,35 @@ func VerifyToken(token string) (*PayLoad, error) {
 		return nil, errors.New("nbf timeout")
 	}
 	return &payload, nil
+}
+
+// 校验文件Token
+func VerifyFileToken(token string) (int64, error) {
+	// 空字符不处理验证
+	if token == "" {
+		return -1, errors.New("token is null")
+	}
+	token = string(tools.Base64UrlDecode(token))
+	values := strings.Split(token, ".")
+	// 如果不是四段字符组成则判断为非法数据
+	if len(values) != 4 {
+		return -1, errors.New("not valid token")
+	}
+	// 处理验证
+	if values[3] != signature(values[0]+"."+values[1]+"."+values[2], JWT_KEY) {
+		return -1, errors.New("token signature invalid")
+	}
+	// 时间过期
+	aftertime, _ := strconv.ParseInt(values[2], 10, 64)
+	if time.Now().Unix() > aftertime {
+		return -1, errors.New("token has expired")
+	}
+	// 获取文件ID
+	data, err := base64.StdEncoding.DecodeString(values[0])
+	if err != nil {
+		return -1, errors.New("invalid token")
+	}
+	var fileid int64
+	binary.Read(bytes.NewReader(data), binary.BigEndian, &fileid)
+	return fileid, nil
 }
