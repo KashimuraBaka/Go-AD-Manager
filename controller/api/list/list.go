@@ -13,13 +13,13 @@ import (
 func GetDomainUsers(ctx *gin.Context) {
 	res := &[]DomainUser{}
 	mysql.DB.Find(res)
-	ctx.JSON(http.StatusOK, g.ResponseSuccess(res))
+	ctx.JSON(http.StatusOK, g.ResponseSuccess(res, "success"))
 }
 
 func GetSystemUrls(ctx *gin.Context) {
 	res := &[]SystemUrl{}
 	mysql.DB.Find(res)
-	ctx.JSON(http.StatusOK, g.ResponseSuccess(res))
+	ctx.JSON(http.StatusOK, g.ResponseSuccess(res, "success"))
 }
 
 func GetDownloadFiles(ctx *gin.Context) {
@@ -29,7 +29,7 @@ func GetDownloadFiles(ctx *gin.Context) {
 			res[i].FileName = jwt.GetFileToken(v.ID)
 		}
 	}
-	ctx.JSON(http.StatusOK, g.ResponseSuccess(res))
+	ctx.JSON(http.StatusOK, g.ResponseSuccess(res, "success"))
 }
 
 func GetAttendanceList(ctx *gin.Context) {
@@ -38,7 +38,7 @@ func GetAttendanceList(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, g.ResponseError("查询错误"))
 		return
 	}
-	ctx.JSON(http.StatusOK, g.ResponseSuccess(users))
+	ctx.JSON(http.StatusOK, g.ResponseSuccess(users, "success"))
 }
 
 func Group(group *gin.RouterGroup) {

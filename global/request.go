@@ -19,10 +19,10 @@ func ResponseError(msg string) *Response {
 	}
 }
 
-func ResponseSuccess(data any) *Response {
+func ResponseSuccess(data any, msg string) *Response {
 	return &Response{
 		Code: RES_SUCCESS,
 		Data: data,
-		Msg:  "success",
+		Msg:  msg,
 	}
 }

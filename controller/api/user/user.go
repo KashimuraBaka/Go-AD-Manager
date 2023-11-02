@@ -72,7 +72,7 @@ func UserCheck(ctx *gin.Context) {
 		user.LogonTime = time.Now()
 		user.IP = ctx.RemoteIP()
 		mysql.DB.Save(&user)
-		ctx.JSON(http.StatusOK, g.ResponseSuccess(data))
+		ctx.JSON(http.StatusOK, g.ResponseSuccess(data, "success"))
 	}
 }
 
@@ -81,7 +81,7 @@ func GetUserRecord(ctx *gin.Context) {
 	if mysql.DB.Find(users).RowsAffected == 0 {
 		ctx.JSON(http.StatusOK, g.ResponseError("not found"))
 	} else {
-		ctx.JSON(http.StatusOK, g.ResponseSuccess(users))
+		ctx.JSON(http.StatusOK, g.ResponseSuccess(users, "success"))
 	}
 }
 
@@ -98,7 +98,7 @@ func GetUserRecordPage(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, g.ResponseSuccess(gin.H{
 			"total": total,
 			"data":  users,
-		}))
+		}, "success"))
 	}
 }
 
@@ -127,7 +127,7 @@ func InsertAttendanceRecord(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, g.ResponseSuccess(nil))
+	ctx.JSON(http.StatusOK, g.ResponseSuccess(nil, "success"))
 }
 
 func Group(group *gin.RouterGroup) {

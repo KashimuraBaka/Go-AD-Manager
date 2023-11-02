@@ -11,7 +11,7 @@ import (
 func GetPhoneList(ctx *gin.Context) {
 	res := &[]PhoneInfo{}
 	mysql.DB.Find(res)
-	ctx.JSON(http.StatusOK, g.ResponseSuccess(res))
+	ctx.JSON(http.StatusOK, g.ResponseSuccess(res, "success"))
 }
 
 func UpdatePhoneInfo(ctx *gin.Context) {
@@ -23,7 +23,7 @@ func UpdatePhoneInfo(ctx *gin.Context) {
 	if mysql.DB.Create(info).Error != nil {
 		ctx.JSON(http.StatusOK, g.ResponseError("update error"))
 	} else {
-		ctx.JSON(http.StatusOK, g.ResponseSuccess(nil))
+		ctx.JSON(http.StatusOK, g.ResponseSuccess(nil, "success"))
 	}
 }
 
