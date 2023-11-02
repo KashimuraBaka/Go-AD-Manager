@@ -32,7 +32,7 @@ func UploadFile(ctx *gin.Context) {
 	rfile := FileInfo{}
 	if mysql.DB.Model(rfile).Where("fname = ?", fileMD5).Find(&rfile).RowsAffected == 0 {
 		// 保存文件
-		ctx.SaveUploadedFile(file, path.Join("static", "uploads", fileMD5))
+		ctx.SaveUploadedFile(file, path.Join("data", "uploads", fileMD5))
 		// 保存记录
 		rfile.Name = file.Filename
 		rfile.FileName = fileMD5
@@ -63,7 +63,7 @@ func DownloadFile(ctx *gin.Context) {
 	info.DownloadNum++
 	mysql.DB.Save(&info)
 
-	pt := path.Join("static", "uploads", info.FileName)
+	pt := path.Join("data", "uploads", info.FileName)
 	f, err := os.Open(pt)
 	if err != nil {
 		ctx.String(http.StatusBadRequest, "文件不存在")
@@ -139,7 +139,7 @@ func DeleteFile(ctx *gin.Context) {
 		return
 	}
 	// 删除文件
-	filepath := path.Join("static", "uploads", file.FileName)
+	filepath := path.Join("data", "uploads", file.FileName)
 	if _, err := os.Stat(filepath); !os.IsNotExist(err) {
 		if err = os.Remove(filepath); err != nil {
 			ctx.JSON(http.StatusOK, g.ResponseError("文件删除失败, 请稍后重试"))
@@ -178,7 +178,7 @@ func DeleteBeforeFile(ctx *gin.Context) {
 		var row map[string]any
 		data := make([]map[string]any, 0)
 		for _, v := range files {
-			filepath := path.Join("static", "uploads", v.FileName)
+			filepath := path.Join("data", "uploads", v.FileName)
 			if _, err := os.Stat(filepath); !os.IsNotExist(err) {
 				if err = os.Remove(filepath); err != nil {
 					continue

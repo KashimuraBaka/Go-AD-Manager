@@ -3,7 +3,7 @@ package mdb
 var DB *DataBase
 
 func init() {
-	/* absPath, err := filepath.Abs(path.Join("static", "att2000.mdb"))
+	/* absPath, err := filepath.Abs(path.Join("data", "att2000.mdb"))
 	if err != nil {
 		return
 	} */
