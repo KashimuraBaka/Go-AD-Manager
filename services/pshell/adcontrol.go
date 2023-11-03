@@ -6,25 +6,27 @@ type ADControl struct {
 	*PowerShell
 }
 
-func (ps *ADControl) EnableUser(user string, unlock bool) {
+func (ps *ADControl) EnableUser(user string, unlock bool) (err error) {
 	if unlock {
-		ps.Execute(
+		_, _, err = ps.Execute(
 			fmt.Sprintf("Enable-ADAccount '%s';", user),
 			fmt.Sprintf("Get-ADUser '%s' | Move-ADObject -TargetPath 'OU=阿里,OU=催收,DC=rgrr,DC=cn';", user),
 		)
 	} else {
-		ps.Execute(
+		_, _, err = ps.Execute(
 			fmt.Sprintf("Disable-ADAccount '%s';", user),
 			fmt.Sprintf("Get-ADUser '%s' | Move-ADObject -TargetPath 'OU=Disable,OU=催收,DC=rgrr,DC=cn';", user),
 		)
 	}
+	return
 }
 
-func (ps *ADControl) UnlockUser(user string, pwd string) {
-	ps.Execute(
+func (ps *ADControl) UnlockUser(user string, pwd string) (err error) {
+	_, _, err = ps.Execute(
 		fmt.Sprintf("Unlock-ADAccount -Identity '%s';", user),
 		fmt.Sprintf("Set-ADAccountPassword -Identity '%s' -Reset -NewPassword (ConvertTo-SecureString -AsPlainText '%s' -Force)", user, pwd),
 	)
+	return
 }
 
 func (ps *ADControl) GetUsers(user string) {
