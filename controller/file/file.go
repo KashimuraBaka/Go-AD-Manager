@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"os"
 	"path"
+	"strconv"
 	"time"
 
 	"gitee.com/Kashimura/go-baka-control/db/mysql"
@@ -63,36 +64,67 @@ func DownloadFile(ctx *gin.Context) {
 	info.DownloadNum++
 	mysql.DB.Save(&info)
 
-	pt := path.Join("data", "uploads", info.FileName)
-	f, err := os.Open(pt)
+	// 打开文件
+	filePath := path.Join("data", "uploads", info.FileName)
+
+	// 获取文件信息
+	fileInfo, err := os.Stat(filePath)
 	if err != nil {
-		ctx.String(http.StatusBadRequest, "文件不存在")
+		ctx.String(http.StatusNotFound, "File not found")
 		return
 	}
-	defer f.Close()
 
-	p := make([]byte, 1024)
+	// 获取文件大小
+	fileSize := fileInfo.Size()
 
-	w := ctx.Writer
-	w.Header().Set("Content-Type", "application/octet-stream")
-	w.Header().Set("Content-Disposition", "attachment; filename="+url.QueryEscape(info.Name))
-
-	var readErr error
-	var readCount int
-
-	for {
-		readCount, readErr = f.Read(p)
-		if readErr != nil {
-			break
-		}
-		if readCount > 0 {
-			if _, err := w.Write(p[:readCount]); err != nil {
-				break
-			}
-		}
+	// 打开文件并将其内容写入响应体中
+	file, err := os.Open(filePath)
+	if err != nil {
+		ctx.String(http.StatusInternalServerError, err.Error())
+		return
 	}
+	defer file.Close()
 
-	ctx.AbortWithStatus(http.StatusOK)
+	// 获取文件MIME类型
+	buffer := make([]byte, 512)
+	_, _ = file.Read(buffer)
+
+	// 获取请求头中的 Range 字段
+	rangeHeader := ctx.Request.Header.Get("Range")
+
+	ctx.Header("Content-Disposition", "attachment; filename="+url.QueryEscape(info.Name))
+	ctx.Header("Content-Type", http.DetectContentType(buffer))
+	ctx.Header("Accept-Ranges", "bytes")
+
+	if rangeHeader == "" {
+		ctx.Header("Content-Length", strconv.FormatInt(fileSize, 10))
+		io.Copy(ctx.Writer, file)
+	} else {
+		var start, end int64
+		if _, err := fmt.Sscanf(rangeHeader, "bytes=%d-%d", &start, &end); err != nil {
+			ctx.String(http.StatusBadRequest, err.Error())
+			return
+		}
+
+		if start < 0 || end < 0 || start >= fileSize || end >= fileSize || start > end {
+			ctx.String(http.StatusBadRequest, "Invalid Range header")
+			return
+		}
+
+		ctx.Header("Content-Range", fmt.Sprintf("bytes %d-%d/%d", start, end, fileSize))
+		ctx.Header("Content-Length", strconv.FormatInt(start-end, 10))
+		ctx.Status(http.StatusPartialContent)
+
+		// 读取位置
+		_, err = file.Seek(start, io.SeekStart)
+		if err != nil {
+			ctx.String(http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		// 将文件内容写入响应体中
+		io.CopyN(ctx.Writer, file, end-start)
+	}
 }
 
 func ReNameFile(ctx *gin.Context) {
@@ -102,18 +134,21 @@ func ReNameFile(ctx *gin.Context) {
 		ctx.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
+
 	// 校验 文件token
 	id, err := jwt.VerifyFileToken(key)
 	if err != nil {
 		ctx.JSON(http.StatusOK, g.ResponseError("非有效文件密钥"))
 		return
 	}
+
 	// 查询该文件
 	file := FileInfo{ID: id}
 	if mysql.DB.Find(&file).RowsAffected == 0 {
 		ctx.JSON(http.StatusOK, g.ResponseError("重命名失败, 请刷新网页重试!"))
 		return
 	}
+
 	file.ReName = name
 	mysql.DB.Save(&file)
 	ctx.JSON(http.StatusOK, g.ResponseSuccess(nil, "重命名成功!"))
@@ -126,18 +161,21 @@ func DeleteFile(ctx *gin.Context) {
 		ctx.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
+
 	// 校验文件token
 	id, err := jwt.VerifyFileToken(key)
 	if err != nil {
 		ctx.JSON(http.StatusOK, g.ResponseError("非有效文件密钥"))
 		return
 	}
+
 	// 数据库查找文件
 	file := FileInfo{ID: id}
 	if mysql.DB.Find(&file).RowsAffected == 0 {
 		ctx.JSON(http.StatusOK, g.ResponseError("资源文件不存在"))
 		return
 	}
+
 	// 删除文件
 	filepath := path.Join("data", "uploads", file.FileName)
 	if _, err := os.Stat(filepath); !os.IsNotExist(err) {
