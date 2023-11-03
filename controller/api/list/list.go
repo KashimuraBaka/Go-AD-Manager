@@ -35,7 +35,7 @@ func GetDownloadFiles(ctx *gin.Context) {
 func GetAttendanceList(ctx *gin.Context) {
 	users, err := mdb.DB.SelectUserInfo()
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, g.ResponseError("查询错误"))
+		ctx.JSON(http.StatusInternalServerError, g.ResponseError("查询错误: "+err.Error()))
 		return
 	}
 	ctx.JSON(http.StatusOK, g.ResponseSuccess(users, "success"))
