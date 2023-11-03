@@ -17,9 +17,9 @@ func Strtr(str string, from string, to string) string {
 }
 
 func HasSysbol(str string) bool {
-	matched, err := regexp.MatchString("^[0-9A-Za-z\u4e00-\u9fa5]+$", str)
-	if err != nil {
-		return true
+	if str == "" {
+		return false
 	}
-	return matched
+	matched, _ := regexp.MatchString(`^[0-9A-Za-z\x{4E00}-\x{9FA5}]+$`, str)
+	return !matched
 }
