@@ -38,8 +38,10 @@ func Router() *gin.Engine {
 
 	engine.Use(gin.LoggerWithConfig(gin.LoggerConfig{Formatter: CustomLoggerFormatter}))
 
-	// 开始Gzip压缩
-	engine.Use(gzip.Gzip(gzip.BestSpeed))
+	// 开始Gzip压缩, 下载文件不压缩数据
+	engine.Use(gzip.Gzip(gzip.BestSpeed, gzip.WithExcludedPaths([]string{
+		"/file/download/",
+	})))
 
 	// 允许跨域
 	engine.Use(cors.New(cors.Config{
