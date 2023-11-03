@@ -1,6 +1,9 @@
 package pshell
 
-import "fmt"
+import (
+	"encoding/json"
+	"fmt"
+)
 
 type ADControl struct {
 	*PowerShell
@@ -29,12 +32,12 @@ func (ps *ADControl) UnlockUser(user string, pwd string) (err error) {
 	return
 }
 
-func (ps *ADControl) GetUsers(user string) {
+func (ps *ADControl) GetUsers(user string) ([]ADUser, error) {
 	var stdout string
-	var stderr string
 	var err error
+	ls := make([]ADUser, 0)
 	if user == "" {
-		stdout, stderr, err = ps.Execute(`
+		stdout, _, err = ps.Execute(`
 		function empty {param($val, $default = $null); return $(if($val -ne $null) {$val} else {$default})};
 		$ADUser = Get-ADUser -Filter * -SearchBase 'OU=催收,DC=rgrr,DC=cn' -properties logoncount,CanonicalName,lastlogon,badpasswordtime,badPwdCount,pwdLastSet;
 		$ADUser = $ADUser | select name,enabled,logoncount,CanonicalName,lastlogon,badpasswordtime,badPwdCount,pwdLastSet;
@@ -50,7 +53,7 @@ func (ps *ADControl) GetUsers(user string) {
 		};
 		$ADUser | ConvertTo-Json -Compress`)
 	} else {
-		stdout, stderr, err = ps.Execute(
+		stdout, _, err = ps.Execute(
 			"function empty {param($val, $default = $null); return $(if($val -ne $null) {$val} else {$default})};",
 			fmt.Sprintf("$ADUser = Get-ADUser '%s' -properties * | select name,enabled,logoncount,CanonicalName,lastlogon,badpasswordtime,badPwdCount,pwdLastSet;", user),
 			fmt.Sprintf("$ADComputer = Get-ADComputer '%s' -properties * | select Name,Description,OperatingSystem,OperatingSystemVersion;", user),
@@ -67,9 +70,12 @@ func (ps *ADControl) GetUsers(user string) {
 	}
 	if err != nil {
 		fmt.Println("[ADControl] Error", err)
+		return nil, err
 	}
-	fmt.Println(stdout)
-	fmt.Println(stderr)
+	if err = json.Unmarshal([]byte(stdout), &ls); err != nil {
+		return nil, err
+	}
+	return ls, nil
 }
 
 func CreateADControl() (*ADControl, error) {
