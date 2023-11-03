@@ -24,7 +24,7 @@ func GetSystemUrls(ctx *gin.Context) {
 
 func GetDownloadFiles(ctx *gin.Context) {
 	res := []DownloadFile{}
-	if mysql.DB.Find(&res).RowsAffected > 0 {
+	if mysql.DB.Order("time DESC").Find(&res).RowsAffected > 0 {
 		for i, v := range res {
 			res[i].FileName = jwt.GetFileToken(v.ID)
 		}
