@@ -18,7 +18,12 @@ func GetUserInfo(ctx *gin.Context) {
 		ctx.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	pshell.Shell.GetUsers(user)
+	users, err := pshell.Shell.GetUsers(user)
+	if err != nil {
+		ctx.JSON(http.StatusOK, g.ResponseError("查询失败"))
+	} else {
+		ctx.JSON(http.StatusOK, g.ResponseSuccess(users, "查询成功"))
+	}
 }
 
 func EnableUser(ctx *gin.Context) {
