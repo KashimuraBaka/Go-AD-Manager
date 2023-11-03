@@ -13,6 +13,6 @@ type DriverInfo struct {
 }
 
 type AttendanceData struct {
-	Users   []UserInfo
-	Drivers []DriverInfo
+	Users   []UserInfo   `json:"users"`
+	Drivers []DriverInfo `json:"drivers"`
 }
