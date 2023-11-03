@@ -57,7 +57,7 @@ func (db DataBase) SelectUserInfo() (AttendanceData, error) {
 		if err := rows.Scan(&id, &ma, &sn); err != nil {
 			return data, err
 		}
-		data.Drivers = append(data.Drivers, DriverInfo{
+		data.Devices = append(data.Devices, DriverInfo{
 			ID:           id,
 			MachineAlias: ma.String,
 			SN:           sn.String,

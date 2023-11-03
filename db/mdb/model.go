@@ -14,5 +14,5 @@ type DriverInfo struct {
 
 type AttendanceData struct {
 	Users   []UserInfo   `json:"users"`
-	Drivers []DriverInfo `json:"drivers"`
+	Devices []DriverInfo `json:"devices"`
 }
