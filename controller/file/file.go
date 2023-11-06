@@ -88,13 +88,15 @@ func DownloadFile(ctx *gin.Context) {
 	// 获取文件MIME类型
 	buffer := make([]byte, 512)
 	_, _ = file.Read(buffer)
+	file.Seek(0, io.SeekStart)
 
-	// 获取请求头中的 Range 字段
-	rangeHeader := ctx.Request.Header.Get("Range")
-
+	// 设置响应头
 	ctx.Header("Content-Disposition", "attachment; filename="+url.QueryEscape(info.Name))
 	ctx.Header("Content-Type", http.DetectContentType(buffer))
 	ctx.Header("Accept-Ranges", "bytes")
+
+	// 获取请求头中的 Range 字段
+	rangeHeader := ctx.Request.Header.Get("Range")
 
 	if rangeHeader == "" {
 		ctx.Header("Content-Length", strconv.FormatInt(fileSize, 10))
