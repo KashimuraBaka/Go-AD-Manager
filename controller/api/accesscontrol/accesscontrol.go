@@ -37,6 +37,7 @@ func (ACAuthority) TableName() string {
 type ACDevice struct {
 	Device int    `json:"device" gorm:"column:device;primaryKey"`
 	Name   string `json:"name" gorm:"column:name"`
+	SN     string `json:"sn" gorm:"column:sn"`
 }
 
 func (ACDevice) TableName() string {
