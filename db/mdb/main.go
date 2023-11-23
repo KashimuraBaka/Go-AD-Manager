@@ -7,5 +7,5 @@ func init() {
 	if err != nil {
 		return
 	} */
-	DB = &DataBase{Path: "F:\\DataBase\\att2000.mdb"}
+	DB = &DataBase{Path: "\\\\192.168.102.225\\database\\attendance\\att2000.mdb"}
 }
