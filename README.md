@@ -11,7 +11,7 @@
 1.  由于当前项目是基于 Powershell 远程协议执行命令来控制 AD 域操作, 需要在 远程端(域控服务器) 下通过 Powershell 给 控制端 IP 白名单放行
 2.  Set-Item wsman:\localhost\Client\TrustedHosts -value 192.168.102.*
 
-#### 使用说明
+#### 功能介绍
 目前仅实现一些简单功能, 如果开放过多功能可能会有安全性漏洞
 
 1. 账户数量统计
