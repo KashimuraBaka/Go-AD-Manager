@@ -1,39 +1,20 @@
-# go-BakaControl
+# go-AD-Manager
 
 #### 介绍
-{**以下是 Gitee 平台说明，您可以替换此简介**
-Gitee 是 OSCHINA 推出的基于 Git 的代码托管平台（同时支持 SVN）。专为开发者提供稳定、高效、安全的云端软件开发协作平台
-无论是个人、团队、或是企业，都能够用 Gitee 实现代码托管、项目管理、协作开发。企业项目请看 [https://gitee.com/enterprises](https://gitee.com/enterprises)}
-
-#### 软件架构
-软件架构说明
-
+用 GoLang 编写的 远程维护 AD域账户管理, 适用于多用户通过 Web 来进行域账户管理.
+不用通过访问域控服务器来进行管理
 
 #### 安装教程
-
-1.  xxxx
-2.  xxxx
-3.  xxxx
+克隆本项目后, 在项目根目录执行 go build -o main.exe main.go 即可完成编译
 
 #### 使用说明
+1.  由于当前项目是基于 Powershell 远程协议执行命令来控制 AD 域操作, 需要在 远程端(域控服务器) 下通过 Powershell 给 控制端 IP 白名单放行
+2.  Set-Item wsman:\localhost\Client\TrustedHosts -value 192.168.102.*
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+#### 使用说明
+目前仅实现一些简单功能, 如果开放过多功能可能会有安全性漏洞
 
-#### 参与贡献
-
-1.  Fork 本仓库
-2.  新建 Feat_xxx 分支
-3.  提交代码
-4.  新建 Pull Request
-
-
-#### 特技
-
-1.  使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2.  Gitee 官方博客 [blog.gitee.com](https://blog.gitee.com)
-3.  你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解 Gitee 上的优秀开源项目
-4.  [GVP](https://gitee.com/gvp) 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目
-5.  Gitee 官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6.  Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+1. 账户数量统计
+2. 账户当前状态 (登录时间, 密码错误时间, 密码错误次数, 账户 OS 环境版本...)
+3. 账户启用/禁用
+4. 账户策略组移动
