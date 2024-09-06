@@ -1,7 +1,7 @@
 package main
 
-import "gitee.com/Kashimura/go-baka-control/cmd/gobaka"
+import "gitee.com/Kashimura/go-baka-control/cmd/web"
 
 func main() {
-	gobaka.Router().Run(":80")
+	web.Router().Run(":80")
 }
